@@ -49,6 +49,7 @@ class GitHubConfig(PkgRepoConfig):
     repo: str
     branch: str = 'master'
     index_filename: str = 'index.toml'
+    private: bool = True
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -401,6 +402,7 @@ def github_init_pkg_repo(
         pywharf_version: str = '0.2.0',
         enable_gh_pages: bool = False,
         dry_run: bool = False,
+        private: bool = basic_model_get_default(GitHubConfig, 'private')
 ):
     docker_image = f'docker://pywharf/pywharf:{pywharf_version}'
 
@@ -484,6 +486,7 @@ jobs:
             has_downloads=False,
             has_projects=False,
             auto_init=True,
+            private=private
     )
     # GitHub might take some time to create the READMD.md.
     time.sleep(3.0)

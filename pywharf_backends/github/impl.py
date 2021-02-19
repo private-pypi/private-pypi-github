@@ -39,6 +39,8 @@ from pywharf_core.utils import git_hash_sha, split_package_ext
 
 GITHUB_TYPE = 'github'
 
+MAIN_BRANCH_NAME = 'main'
+
 
 class GitHubConfig(PkgRepoConfig):
     # Override.
@@ -47,7 +49,7 @@ class GitHubConfig(PkgRepoConfig):
     # GitHub specific.
     owner: str
     repo: str
-    branch: str = 'master'
+    branch: str = MAIN_BRANCH_NAME
     index_filename: str = 'index.toml'
 
     def __init__(self, **data):
@@ -489,10 +491,10 @@ jobs:
     time.sleep(3.0)
 
     # Default branch setup.
-    master_ref = gh_repo.get_git_ref('heads/master')
-    master_ref_sha = master_ref._rawData['object']['sha']  # pylint: disable=protected-access
-    if branch != 'master':
-        gh_repo.create_git_ref(f'refs/heads/{branch}', master_ref_sha)
+    main_ref = gh_repo.get_git_ref(f'heads/{MAIN_BRANCH_NAME}')
+    main_ref_sha = main_ref._rawData['object']['sha']  # pylint: disable=protected-access
+    if branch != MAIN_BRANCH_NAME:
+        gh_repo.create_git_ref(f'refs/heads/{branch}', main_ref_sha)
         gh_repo.edit(default_branch=branch)
 
     gh_repo.create_file(
@@ -504,7 +506,7 @@ jobs:
 
     if enable_gh_pages:
         # Create branch gh-pages.
-        gh_repo.create_git_ref(f'refs/heads/gh-pages', master_ref_sha)
+        gh_repo.create_git_ref(f'refs/heads/gh-pages', main_ref_sha)
         # Setup index.html.
         gh_repo.create_file(
                 path='index.html',
